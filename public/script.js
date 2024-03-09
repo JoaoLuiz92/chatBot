@@ -1,7 +1,7 @@
-const { default: axios } = require("axios");
 
 const chatBox = document.getElementById('chat-box');
 const userInput = document.getElementById('user-input');
+
 
 function appendMessage(sender, message) {
   const div = document.createElement('div');
@@ -10,20 +10,19 @@ function appendMessage(sender, message) {
 }
 
 function sendMessage() {
-  const userMessage = userInput.value.trim();
-
-  if (userMessage !== '') {
-    appendMessage('Você', userMessage);
-    userInput.value = '';
-
-    // Enviar mensagem para o back-end
-    axios('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: userMessage })
-    })
-      .then(response => response.json())
-      .then(data => appendMessage('Chatbot', data.message))
-      .catch(error => console.error('Erro ao processar a resposta:', error));
+    const userMessage = userInput.value.trim();
+  
+    if (userMessage !== '') {
+      appendMessage('Você', userMessage);
+      userInput.value = '';
+  
+      // Enviar mensagem para o back-end usando axios.post
+      axios.post('/api/chat', { message: userMessage })
+        .then(response => {
+          // Manipular a resposta do servidor aqui
+          appendMessage('Chatbot', response.data.message);
+        })
+        .catch(error => console.error('Erro ao processar a resposta:', error));
+    }
   }
-}
+  
