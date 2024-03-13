@@ -4,17 +4,15 @@ const axios = require('axios');
 const swaggerUi = require('swagger-ui-express');
 const bodyParser = require('body-parser');
 
+
+require('dotenv').config();
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.static('public'));
 app.use(express.json());
 app.use(bodyParser.json());
-
-const LLAMA_ENDPOINT = 'https://rivia-rthzn.brazilsouth.inference.ml.azure.com/score';
-const LLAMA_KEY = '4CUdm3xRF52khe94GYJSOKZcP83z0TAf';
-const swaggerEndpoint = 'https://rivia-rthzn.brazilsouth.inference.ml.azure.com/swagger.json';
-
 
 
 
@@ -216,8 +214,53 @@ const swaggerDocument = {
   }
 }
 
+
 app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
+app.post('/', async (req, res) => {
+    const userMessage = req.body;
+
+        const requestBody = {
+        "model": "gpt-3.5-turbo",
+        "messages": [
+          {
+            "role": "system",
+            "content": "You are a helpful assistant."
+          },
+          {
+            "role": "user",
+            "content": "Hello!"
+          }
+        ]
+    };
+  
+    try {
+        // Fazer a chamada ao serviço Llama2 usando os dados da requisição e as variáveis de ambiente
+        const llamaResponse = await axios.post(process.env.LLAMA_ENDPOINT, requestBody, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${process.env.LLAMA_KEY}`,
+                
+            },
+         
+});
+
+// Enviar a resposta do Llama2 de volta ao cliente
+res.status(200).json(llamaResponse.data);
+} catch (error) {
+    console.error('Erro na chamada do serviço Llama2:', error.message);
+      res.status(500).json({ message: 'Erro no servidor' });
+    }
+  });
+
+
+
+app.listen(PORT, () => {
+  console.log(`Servidor rodando na porta ${PORT}`);
+});
+
+
+/*app.post('/api/chat', async (req, res) => {
 app.get('/health', (req, res) => {
   res.status(200).json({ healthy: '' });
 });
@@ -271,10 +314,10 @@ app.post('/v1/chat/completion', async (req, res) => {
   
  
 
-  const llamaResponse = await axios.post(LLAMA_ENDPOINT,requestBody,{
+  const llamaResponse = await axios.post(process.env.LLAMA_ENDPOINT,requestBody,{
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${LLAMA_KEY}`
+      'Authorization': `Bearer ${process.env.LLAMA_KEY}`
     },
 
   });
@@ -304,12 +347,9 @@ app.post('/v1/chat/completion', async (req, res) => {
       completion_tokens: 12,
       total_tokens: 21,
     },
-    
 
-    
     });
   
-    
   } catch (error) {
     console.error('Erro na chamada do Llama2:', error.message);
     res.status(500).json({ message: 'Erro no servidor' });
@@ -319,7 +359,6 @@ app.post('/v1/chat/completion', async (req, res) => {
 
 
 
-/*app.post('/api/chat', async (req, res) => {
   const requestBody = req.body.message;
 
   try {
@@ -345,11 +384,6 @@ function processLlamaResponse(llamaResponse) {
   // Adicione sua lógica aqui conforme necessário
   return llamaResponse.output;
 }*/
-
-app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
-});
-
 
 
 

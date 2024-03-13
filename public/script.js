@@ -2,14 +2,14 @@
 
 function sendMessage() {
   const userInput = document.getElementById('user-input');
-  const requestBody = requestBody.value.trim();
+  const userMessage = userInput.value.trim();
   
-  if (requestBody !== '') {
-    appendMessage('Você', requestBody);
+  if (userMessage !== '') {
+    appendMessage('Você', userMessage);
     userInput.value = '';
 
     // Enviar mensagem para o back-end usando axios.post
-    axios.post('/api/chat', { message: requestBody })
+    axios.post('/', { message: userMessage })
       .then(response => {
         // Manipular a resposta do servidor aqui
         appendMessage('Chatbot', response.data.message);
