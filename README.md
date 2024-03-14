@@ -72,7 +72,7 @@ Api criada através de Node.js
 
 Desafio realizado por :
 
-- **João Luiz** - _Trabalho Inicial_ - [Desenvolvedor](https://github.com/JoaoLuiz92)
+- **João Luiz Da Rosa Junior** - _Trabalho Inicial_ - [Desenvolvedor](https://github.com/JoaoLuiz92)
 
 ## 📄 Licença
 
